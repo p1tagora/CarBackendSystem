@@ -1,15 +1,22 @@
 package com.udacity.vehicles;
 
+import com.udacity.vehicles.client.prices.Price;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.domain.manufacturer.ManufacturerRepository;
+import com.udacity.vehicles.service.CarService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Launches a Spring Boot application for the Vehicles API,
@@ -19,6 +26,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @SpringBootApplication
 @EnableJpaAuditing
 public class VehiclesApiApplication {
+
+    private static final Logger log = LoggerFactory.getLogger(VehiclesApiApplication.class);
 
     public static void main(String[] args) {
         SpringApplication.run(VehiclesApiApplication.class, args);
@@ -63,6 +72,24 @@ public class VehiclesApiApplication {
     @Bean(name="pricing")
     public WebClient webClientPricing(@Value("${pricing.endpoint}") String endpoint) {
         return WebClient.create(endpoint);
+    }
+
+    /* test calling the price service */
+
+    @Bean
+    public CommandLineRunner run() throws Exception {
+        return args -> {
+            WebClient webClientPricing = WebClient.create("http://localhost:8082/services/price?vehicleId=1");
+            Mono<Price> priceResponse =webClientPricing.get()
+
+                    .retrieve()
+                    .bodyToMono(Price.class);
+
+            Price price = priceResponse.block();
+            System.out.println(price.toString());
+            log.info(price.toString());
+            log.info(price.getCurrency() + price.getPrice() + price.getVehicleId());
+        };
     }
 
 }
