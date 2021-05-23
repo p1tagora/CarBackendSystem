@@ -74,23 +74,4 @@ public class VehiclesApiApplication {
         return WebClient.create(endpoint);
     }
 
-    /* test calling the price service */
-    /*
-    @Bean
-    public CommandLineRunner run() throws Exception {
-        return args -> {
-            WebClient webClientPricing = WebClient.create("http://localhost:8082/services/price?vehicleId=1");
-            Mono<Price> priceResponse =webClientPricing.get()
-
-                    .retrieve()
-                    .bodyToMono(Price.class);
-
-            Price price = priceResponse.block();
-            System.out.println(price.toString());
-            log.info(price.toString());
-            log.info(price.getCurrency() + price.getPrice() + price.getVehicleId());
-        };
-    }
-     */
-
 }
