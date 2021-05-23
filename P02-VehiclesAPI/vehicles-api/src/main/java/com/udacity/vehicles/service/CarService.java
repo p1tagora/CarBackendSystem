@@ -72,6 +72,7 @@ public class CarService {
         String curryPrice = priceClient.getPrice(id);
         price.setCurrency(curryPrice.split(" ")[0]);
         price.setPrice(new BigDecimal(curryPrice.split(" ")[1]));
+        car.setPrice(price.getCurrency() + " " + price.getPrice());
 
         /**
          * TODO: Use the Maps Web client you create in `VehiclesApiApplication`
@@ -81,10 +82,8 @@ public class CarService {
          * Note: The Location class file also uses @transient for the address,
          * meaning the Maps service needs to be called each time for the address.
          */
-        Address address = new Address();
         Location location = mapsClient.getAddress(car.getLocation());
         car.setLocation(location);
-
 
         return car;
     }
