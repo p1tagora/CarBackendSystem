@@ -4,6 +4,7 @@ package com.udacity.vehicles.api;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import com.udacity.vehicles.domain.Condition;
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.service.CarService;
 import java.net.URI;
@@ -100,6 +101,11 @@ class CarController {
          * TODO: Use the `assembler` on that updated car and return as part of the response.
          *   Update the first line as part of the above implementing.
          */
+        if (carService.findById(id) != null) {
+            car.setCondition(Condition.USED);
+        } else {
+            car.setCondition(Condition.NEW);
+        }
         car.setId(id);
         Car savedCar = carService.save(car);
         EntityModel<Car> resource = assembler.toModel(savedCar);

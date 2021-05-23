@@ -3,6 +3,7 @@ package com.udacity.vehicles.api;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.udacity.vehicles.client.maps.MapsClient;
@@ -77,12 +78,22 @@ public class CarControllerTest {
     public void createCar() throws Exception {
         Car car = getCar();
 
-        mvc.perform(
-                post(new URI("/cars"))
-                        .content(json.write(car).getJson())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+        mvc.perform(MockMvcRequestBuilders
+                .post("/cars")
+                .content(json.write(car).getJson())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
+    }
+
+    /**
+     * Tests for successful creation of new car in the system
+     * @throws Exception when car creation fails in the system
+     */
+    @Test
+    public void updateCar() throws Exception {
+        Car car = getCar();
+        Car newCar = getAnotherCar();
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/cars")
@@ -91,6 +102,20 @@ public class CarControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
+        mvc.perform(MockMvcRequestBuilders.put("/cars/{id}", 1)
+                        .content(json.write(newCar).getJson())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders
+                .get("/cars/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        Assertions.assertThat(content.contains(json.write(newCar).getJson()));
     }
 
     /**
@@ -191,6 +216,30 @@ public class CarControllerTest {
         details.setNumberOfDoors(4);
         car.setDetails(details);
         car.setCondition(Condition.USED);
+        return car;
+    }
+
+    /**
+     * Creates an example Car object for use in testing.
+     * @return an example Car object
+     */
+    private Car getAnotherCar() {
+        Car car = new Car();
+        car.setLocation(new Location(22.12345, -33.45567));
+        Details details = new Details();
+        Manufacturer manufacturer = new Manufacturer(202, "Ford");
+        details.setManufacturer(manufacturer);
+        details.setModel("Mondeo");
+        details.setMileage(10);
+        details.setExternalColor("red");
+        details.setBody("break");
+        details.setEngine("2.0 TDI");
+        details.setFuelType("Diesel");
+        details.setModelYear(2020);
+        details.setProductionYear(2020);
+        details.setNumberOfDoors(4);
+        car.setDetails(details);
+        car.setCondition(Condition.NEW);
         return car;
     }
 }
