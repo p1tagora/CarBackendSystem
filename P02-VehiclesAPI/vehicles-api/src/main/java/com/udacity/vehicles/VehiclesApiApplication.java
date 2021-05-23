@@ -75,7 +75,7 @@ public class VehiclesApiApplication {
     }
 
     /* test calling the price service */
-
+    /*
     @Bean
     public CommandLineRunner run() throws Exception {
         return args -> {
@@ -91,5 +91,6 @@ public class VehiclesApiApplication {
             log.info(price.getCurrency() + price.getPrice() + price.getVehicleId());
         };
     }
+     */
 
 }
